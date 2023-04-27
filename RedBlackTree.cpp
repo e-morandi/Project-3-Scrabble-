@@ -164,7 +164,7 @@ void rbTree::rotateRight(node *n) {
     }
 }
 
-void rbTree::search(std::string &w, std::vector<std::pair<std::string, int>>& r) {
+void rbTree::search(std::string &w, std::vector<std::string>& r, std::set<std::string>& set) {
     node* current = root;
     int s = value(w);
     while(current != nullptr) {
@@ -179,8 +179,12 @@ void rbTree::search(std::string &w, std::vector<std::pair<std::string, int>>& r)
             //once found check if letters match, using a set to compare
             std::set<char> check(w.begin(), w.end());
             std::set<char> toCompare(current->word.begin(), current->word.end());
+            //before inserting also check if the result already contains the word
             if(toCompare == check) {
-                r.push_back(std::make_pair(current->word, current->score));
+                if (set.find(current->word) == set.end()) {
+                    r.push_back(current->word + ", " + std::to_string(value(current->word)));
+                    set.insert(current->word);
+                }
             }
             //check if there are duplicates
             if(!current->duplicates.empty()) {
@@ -188,7 +192,10 @@ void rbTree::search(std::string &w, std::vector<std::pair<std::string, int>>& r)
                     //make a set for the word in duplicate
                     std::set<char> c(current->duplicates.at(i).begin(), current->duplicates.at(i).end());
                     if(check == c) {
-                        r.push_back(std::make_pair(current->duplicates.at(i), current->score));
+                        if (set.find(current->word) == set.end()) {
+                            r.push_back(current->duplicates.at(i) + ", " + std::to_string(value(current->duplicates.at(i))));
+                            set.insert(current->word);
+                        }
                     }
                 }
                 return;
@@ -263,10 +270,10 @@ rbTree::~rbTree() {
     while(!q.empty()) {
         int size = q.size();
         for(int i = 0; i < size; i++) {
-            if(q.front()->left != nullptr) {
+            if(q.front() != nullptr && q.front()->left != nullptr) {
                 q.push(q.front()->left);
             }
-            if(q.front()->right != nullptr) {
+            if(q.front() != nullptr && q.front()->right != nullptr) {
                 q.push(q.front()->right);
             }
             delete q.front();
@@ -274,5 +281,22 @@ rbTree::~rbTree() {
         }
     }
     root = nullptr;
+}
+
+void rbTree::multisearch(std::string& in, std::vector<std::string>& r, std::set<std::string>& set) {
+    int j = 0;
+    while (j < in.size()) {
+        if (j == 0) {
+            search(in, r, set);
+        }
+        else {
+            for (int i = 0; i < in.size(); i++) {
+                std::string copy = in;
+                copy.erase(i, j);
+                search(copy, r, set);
+            }
+        }
+        j++;
+    }
 }
 
