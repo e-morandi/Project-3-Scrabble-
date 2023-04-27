@@ -2,6 +2,7 @@
 #include <vector>
 #include <set>
 #include <queue>
+#include<algorithm>
 #ifndef REDBLACKTREE_REDBLACKTREE_H
 #define REDBLACKTREE_REDBLACKTREE_H
 
@@ -29,7 +30,8 @@ class rbTree {
     public:
         rbTree();
         void insert(int s, std::string& w);
-        void search(std::string& w, std::vector<std::pair<std::string, int>>& r);
+        void search(std::string& w, std::vector<std::string>& r, std::set<std::string>& set);
+        void multisearch(std::string& in, std::vector<std::string>& r, std::set<std::string>& set);
         int value(std::string& w);
         ~rbTree();
 };
